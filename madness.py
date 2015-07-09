@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import pygame
+import LevelGenerator
 
 from pygame import *
 from Blocks import Platform
 from Player import Player
+
 
 
 WIN_WIDTH = 800
@@ -67,6 +69,7 @@ def camera_configure(camera, target_rect):
     return Rect(l, t, w, h)
 
 def main():
+
     pygame.init()
     screen = pygame.display.set_mode(DISPLAY)
     pygame.display.set_caption("Madness")
