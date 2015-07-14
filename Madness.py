@@ -19,31 +19,6 @@ PLATFORM_WIDTH = 32
 PLATFORM_HEIGHT = 32
 PLATFORM_COLOR = "#FF6262"
 
-level = [
-       "----------------------------------",
-       "-                                -",
-       "-                       --       -",
-       "-                                -",
-       "-            --                  -",
-       "-                                -",
-       "--                               -",
-       "-                                -",
-       "-                   ----     --- -",
-       "-                                -",
-       "--                               -",
-       "-                                -",
-       "-                            --- -",
-       "-                                -",
-       "-                                -",
-       "-      ---                       -",
-       "-                                -",
-       "-   -------         ----         -",
-       "-                                -",
-       "-                         -      -",
-       "-                            --  -",
-       "-                                -",
-       "-                                -",
-       "----------------------------------"]
 
 class Camera(object):
     def __init__(self, camera_func, width, height):
@@ -68,6 +43,8 @@ def camera_configure(camera, target_rect):
 
     return Rect(l, t, w, h)
 
+
+
 def main():
 
     pygame.init()
@@ -80,28 +57,30 @@ def main():
 
     timer = pygame.time.Clock()
 
-    #Все живые объекты будут тут
-    entities = pygame.sprite.Group()
 
-    #Тут платформы для проверки пересечения
-    platforms = []
+    entities = pygame.sprite.Group()
+    colliders = []
 
     entities.add(hero)
 
-    x = y = 0
 
-    for row in level:
+
+    level = LevelGenerator.genSimple()
+
+    total_level_width  = level["size"]["x"] * PLATFORM_WIDTH # Высчитываем фактическую ширину уровня
+    total_level_height = level["size"]["y"] * PLATFORM_HEIGHT   # высоту
+
+    map = level["level"]
+    x = y = 0
+    for row in map:
         for col in row:
-            if col == "-":
+            if col == "#":
                 pf = Platform(x, y)
                 entities.add(pf)
-                platforms.append(pf)
+                colliders.append(pf)
             x += PLATFORM_WIDTH
         y += PLATFORM_HEIGHT
         x = 0
-
-    total_level_width  = len(level[0])*PLATFORM_WIDTH # Высчитываем фактическую ширину уровня
-    total_level_height = len(level)*PLATFORM_HEIGHT   # высоту
 
     camera = Camera(camera_configure, total_level_width, total_level_height)
 
@@ -127,12 +106,15 @@ def main():
                 up = True
                 playerTurn = True
 
-
         screen.blit(bg, (0, 0))
 
-        hero.update(left, right, up, down, platforms)
+        collideType = hero.update(left, right, up, down, colliders)
+        print(collideType)
+        if not(collideType["type"] == 0):
+            print(collideType["id"])
 
         camera.update(hero)
+        #Отрисовка всех объектов на экране
         for e in entities:
             screen.blit(e.image, camera.apply(e))
 

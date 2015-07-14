@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from pygame import *
+from Blocks import Platform
+from NPCs import Monster
 
 MOVE_SPEED = 32
 WIDTH  = 32
@@ -20,7 +22,7 @@ class Player(sprite.Sprite):
         self.image.fill(Color(COLOR))
         self.rect = Rect(x, y, WIDTH, HEIGHT)
 
-    def update(self, left, right, up, down, platforms):
+    def update(self, left, right, up, down, colliders):
         if left:
             self.xvel = -MOVE_SPEED
         if right:
@@ -35,20 +37,19 @@ class Player(sprite.Sprite):
             self.yvel = 0
 
         self.rect.y += self.yvel
-        self.collide(0, self.yvel, platforms)
+        self.collide(0, self.yvel, colliders)
 
         self.rect.x += self.xvel
-        self.collide(self.xvel, 0, platforms)
+        self.collide(self.xvel, 0, colliders)
 
-    def collide(self, xvel, yvel, platforms):
-        for p in platforms:
-            if sprite.collide_rect(self, p):
+    def collide(self, xvel, yvel, colliders):
+        for c in colliders:
+            if sprite.collide_rect(self, c):
                 if xvel > 0:
-                    self.rect.right = p.rect.left
+                    self.rect.right = c.rect.left
                 if xvel < 0:
-                    self.rect.left = p.rect.right
+                    self.rect.left = c.rect.right
                 if yvel > 0:
-                    self.rect.bottom = p.rect.top
+                    self.rect.bottom = c.rect.top
                 if yvel < 0:
-                    self.rect.top = p.rect.bottom
-
+                    self.rect.top = c.rect.bottom
